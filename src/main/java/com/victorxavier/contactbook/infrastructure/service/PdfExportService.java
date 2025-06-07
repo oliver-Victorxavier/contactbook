@@ -11,11 +11,26 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+/**
+ * Service responsible for exporting contact data to PDF format.
+ * Uses iText library for PDF generation with landscape orientation.
+ *
+ * @author Victor Xavier
+ * @since 1.0
+ */
 @Service
 public class PdfExportService {
 
     private static final Logger log = LoggerFactory.getLogger(PdfExportService.class);
 
+    /**
+     * Exports a list of contacts to PDF format as byte array.
+     * PDF is generated in landscape orientation with formatted table.
+     *
+     * @param contacts List of contacts to export
+     * @return byte[] PDF file content
+     * @throws RuntimeException if export fails
+     */
     public byte[] exportContacts(List<Contact> contacts) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
@@ -24,24 +39,20 @@ public class PdfExportService {
 
             document.open();
 
-            // Add title
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
             Paragraph title = new Paragraph("Lista de Contatos", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             title.setSpacingAfter(20);
             document.add(title);
 
-            // Create table
             PdfPTable table = new PdfPTable(8);
             table.setWidthPercentage(100);
             table.setSpacingBefore(10f);
             table.setSpacingAfter(10f);
 
-            // Set column widths
             float[] columnWidths = {1f, 2f, 1.5f, 1f, 2f, 0.8f, 1.5f, 1.5f};
             table.setWidths(columnWidths);
 
-            // Add headers
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
             String[] headers = {"ID", "Nome", "Telefone", "CEP", "Logradouro", "Nº", "Cidade", "Estado"};
 
@@ -50,7 +61,6 @@ public class PdfExportService {
                 table.addCell(phrase);
             }
 
-            // Add data
             Font dataFont = FontFactory.getFont(FontFactory.HELVETICA, 9);
             for (Contact contact : contacts) {
                 table.addCell(new Phrase(String.valueOf(contact.getId()), dataFont));

@@ -7,28 +7,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+/**
+ * Service responsible for exporting contact data to Excel format (.xlsx).
+ * Uses Apache POI library for Excel file generation.
+ *
+ * @author Victor Xavier
+ * @since 1.0
+ */
 @Service
 public class ExcelExportService {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelExportService.class);
 
+    /**
+     * Exports a list of contacts to Excel format as byte array.
+     *
+     * @param contacts List of contacts to export
+     * @return byte[] Excel file content
+     * @throws RuntimeException if export fails
+     */
     public byte[] exportContacts(List<Contact> contacts) {
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
             Sheet sheet = workbook.createSheet("Contatos");
 
-            // Create header style
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
 
-            // Create header row
             Row headerRow = sheet.createRow(0);
             String[] headers = {"ID", "Nome", "Telefone", "CEP", "Logradouro", "Número", "Bairro", "Cidade", "Estado"};
 
@@ -38,7 +49,6 @@ public class ExcelExportService {
                 cell.setCellStyle(headerStyle);
             }
 
-            // Fill data rows
             for (int i = 0; i < contacts.size(); i++) {
                 Contact contact = contacts.get(i);
                 Row row = sheet.createRow(i + 1);
@@ -54,7 +64,6 @@ public class ExcelExportService {
                 row.createCell(8).setCellValue(contact.getEstado());
             }
 
-            // Auto-size columns
             for (int i = 0; i < headers.length; i++) {
                 sheet.autoSizeColumn(i);
             }

@@ -1,8 +1,8 @@
 package com.victorxavier.contactbook.infrastructure.service;
 
-
 import com.victorxavier.contactbook.domain.entity.Contact;
 import com.victorxavier.contactbook.domain.service.AddressService;
+import com.victorxavier.contactbook.infrastructure.exception.CsvProcessingException; // ← ADICIONAR IMPORT
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import java.util.List;
 public class CsvImportService {
 
     private static final Logger log = LoggerFactory.getLogger(CsvImportService.class);
+    private static final int MINIMUM_COLUMNS = 4;
 
     private final AddressService addressService;
 
@@ -34,11 +35,11 @@ public class CsvImportService {
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
-                    continue; // Skip header
+                    continue;
                 }
 
                 String[] data = line.split(",");
-                if (data.length >= 4) {
+                if (data.length >= MINIMUM_COLUMNS) {
                     Contact contact = createContactFromCsv(data);
                     if (contact != null) {
                         contacts.add(contact);
@@ -47,7 +48,7 @@ public class CsvImportService {
             }
         } catch (Exception e) {
             log.error("Error importing CSV file", e);
-            throw new IllegalArgumentException("Erro ao importar arquivo CSV: " + e.getMessage());
+            throw new CsvProcessingException("Erro ao importar arquivo CSV: " + e.getMessage(), e);
         }
 
         return contacts;
@@ -62,7 +63,6 @@ public class CsvImportService {
 
             Contact contact = new Contact(name, phone, cep, numero);
 
-            // Buscar endereço
             try {
                 AddressService.AddressInfo addressInfo = addressService.getAddressByCep(cep);
                 contact.setAddress(

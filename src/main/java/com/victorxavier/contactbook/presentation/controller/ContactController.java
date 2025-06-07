@@ -116,7 +116,7 @@ public class ContactController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "contatos.xlsx");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''contatos.xlsx");
 
         return ResponseEntity.ok()
                 .headers(headers)
@@ -131,10 +131,11 @@ public class ContactController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "contatos.pdf");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''contatos.pdf");
 
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfData);
     }
 }
+

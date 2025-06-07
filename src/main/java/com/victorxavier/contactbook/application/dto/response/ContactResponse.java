@@ -1,9 +1,5 @@
 package com.victorxavier.contactbook.application.dto.response;
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
-
 public class ContactResponse {
     private Long id;
     private String name;
@@ -84,4 +80,7 @@ public class ContactResponse {
     }
 
     public String getEnderecoCompleto() { return enderecoCompleto; }
+    public void setEnderecoCompleto(String enderecoCompleto) {
+        this.enderecoCompleto = enderecoCompleto;
+    }
 }

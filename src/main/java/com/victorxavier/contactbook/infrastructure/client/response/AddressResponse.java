@@ -16,8 +16,9 @@ public class AddressResponse {
     @JsonProperty(value = "uf")
     private String estado;
 
-    public AddressResponse() {}
+    private Boolean erro;
 
+    public AddressResponse() {}
 
     public String getCep() {
         return cep;
@@ -57,5 +58,13 @@ public class AddressResponse {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public Boolean getErro() {
+        return erro;
+    }
+
+    public void setErro(Boolean erro) {
+        this.erro = erro;
     }
 }

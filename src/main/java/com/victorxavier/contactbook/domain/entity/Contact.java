@@ -104,4 +104,12 @@ public class Contact {
         this.cidade = cidade;
         this.estado = estado;
     }
+
+    public void clearAddress() {
+        this.logradouro = null;
+        this.bairro = null;
+        this.cidade = null;
+        this.estado = null;
+
+    }
 }
