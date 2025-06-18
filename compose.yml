@@ -15,7 +15,7 @@ services:
 
   contactbook-app:
     container_name: contactbook-app
-    image: contactbook-api:latest
+    image: victorxavie/contactbook-api:latest
     environment:
       SPRING_PROFILES_ACTIVE: docker
       TZ: "America/Sao_Paulo"
