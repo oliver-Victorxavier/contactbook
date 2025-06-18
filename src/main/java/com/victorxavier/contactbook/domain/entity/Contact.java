@@ -1,21 +1,40 @@
 package com.victorxavier.contactbook.domain.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "contact_book_tb")
+@Schema(description = "Contact entity representing a person with address information")
 public class Contact {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Unique identifier", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
+    @Schema(description = "Full name of the contact", example = "John Doe", required = true)
     private String name;
+
+    @Schema(description = "Phone number", example = "(11) 99999-9999", required = true)
     private String phone;
+
+    @Schema(description = "Brazilian postal code", example = "01001000", required = true)
     private String cep;
+
+    @Schema(description = "Street address", example = "Praça da Sé", accessMode = Schema.AccessMode.READ_ONLY)
     private String logradouro;
+
+    @Schema(description = "House/building number", example = "123", required = true)
     private Integer numero;
+
+    @Schema(description = "Neighborhood", example = "Sé", accessMode = Schema.AccessMode.READ_ONLY)
     private String bairro;
-    private String cidade;
+
+   @Schema(description = "City", example = "São Paulo", accessMode = Schema.AccessMode.READ_ONLY)
+    private String cidade;  
+
+    @Schema(description = "State abbreviation", example = "SP", accessMode = Schema.AccessMode.READ_ONLY)
     private String estado;
 
     public Contact() {}

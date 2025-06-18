@@ -22,12 +22,6 @@ server:
   servlet:
     context-path: /
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /v3/api-docs
-
 management:
   endpoints:
     web:

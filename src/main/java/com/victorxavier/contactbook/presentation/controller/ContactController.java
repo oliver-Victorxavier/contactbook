@@ -5,6 +5,13 @@ import com.victorxavier.contactbook.application.dto.request.ContactUpdateRequest
 import com.victorxavier.contactbook.application.dto.response.ContactResponse;
 import com.victorxavier.contactbook.application.dto.response.PageResponse;
 import com.victorxavier.contactbook.application.service.ContactService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +29,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/contacts")
+@Tag(name = "Contact Management", description = "Operations for managing contacts with automatic address resolution")
 public class ContactController {
 
     private static final Logger log = LoggerFactory.getLogger(ContactController.class);
-
     private final ContactService contactService;
 
     public ContactController(ContactService contactService) {
@@ -33,48 +40,93 @@ public class ContactController {
     }
 
     @PostMapping
-    public ResponseEntity<ContactResponse> createContact(@Valid @RequestBody ContactRequest request) {
+    @Operation(summary = "Create new contact", description = "Creates a new contact with automatic address resolution via CEP")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Contact created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
+            @ApiResponse(responseCode = "404", description = "CEP not found", content = @Content),
+            @ApiResponse(responseCode = "502", description = "Address service unavailable", content = @Content)
+    })
+    public ResponseEntity<ContactResponse> createContact(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Contact information to create",
+                    content = @Content(schema = @Schema(implementation = ContactRequest.class))
+            )
+            @Valid @RequestBody ContactRequest request) {
         log.info("Creating contact with name: {}", request.getName());
         ContactResponse response = contactService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContactResponse> updateContact(@PathVariable Long id,
-                                                         @Valid @RequestBody ContactUpdateRequest request) {
+    @Operation(summary = "Update contact", description = "Updates an existing contact by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contact updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Contact not found", content = @Content)
+    })
+    public ResponseEntity<ContactResponse> updateContact(
+            @Parameter(description = "Contact ID", example = "1") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Updated contact information",
+                    content = @Content(schema = @Schema(implementation = ContactUpdateRequest.class))
+            )
+            @Valid @RequestBody ContactUpdateRequest request) {
         log.info("Updating contact with ID: {}", id);
         ContactResponse response = contactService.update(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteContact(@PathVariable Long id) {
+    @Operation(summary = "Delete contact", description = "Deletes a contact by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Contact deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Contact not found", content = @Content)
+    })
+    public ResponseEntity<Void> deleteContact(
+            @Parameter(description = "Contact ID", example = "1") @PathVariable Long id) {
         log.info("Deleting contact with ID: {}", id);
         contactService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ContactResponse> getContactById(@PathVariable Long id) {
+    @Operation(summary = "Get contact by ID", description = "Retrieves a specific contact by its ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contact found"),
+            @ApiResponse(responseCode = "404", description = "Contact not found", content = @Content)
+    })
+    public ResponseEntity<ContactResponse> getContactById(
+            @Parameter(description = "Contact ID", example = "1") @PathVariable Long id) {
         log.info("Getting contact by ID: {}", id);
         ContactResponse response = contactService.findById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<ContactResponse> getContactByName(@PathVariable String name) {
+    @Operation(summary = "Get contact by name", description = "Retrieves a contact by name")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contact found"),
+            @ApiResponse(responseCode = "404", description = "Contact not found", content = @Content)
+    })
+    public ResponseEntity<ContactResponse> getContactByName(
+            @Parameter(description = "Contact name", example = "John Doe") @PathVariable String name) {
         log.info("Getting contact by name: {}", name);
         ContactResponse response = contactService.findByName(name);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
+    @Operation(summary = "List contacts", description = "Retrieves paginated list of contacts with optional search")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contacts retrieved successfully")
+    })
     public ResponseEntity<PageResponse<ContactResponse>> getAllContacts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) String search) {
+            @Parameter(description = "Page number", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size", example = "10") @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "Sort field", example = "name") @RequestParam(defaultValue = "name") String sortBy,
+            @Parameter(description = "Sort direction", example = "asc") @RequestParam(defaultValue = "asc") String sortDir,
+            @Parameter(description = "Search term", example = "John") @RequestParam(required = false) String search) {
 
         log.info("Getting contacts - page: {}, size: {}, sortBy: {}, sortDir: {}, search: {}",
                 page, size, sortBy, sortDir, search);
@@ -93,49 +145,48 @@ public class ContactController {
     }
 
     @PostMapping("/import")
-    public ResponseEntity<List<ContactResponse>> importContacts(@RequestParam("file") MultipartFile file) {
+    @Operation(summary = "Import contacts", description = "Imports contacts from CSV file")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contacts imported successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid file or processing error", content = @Content)
+    })
+    public ResponseEntity<List<ContactResponse>> importContacts(
+            @Parameter(description = "CSV file containing contacts") @RequestParam("file") MultipartFile file) {
         log.info("Importing contacts from file: {}", file.getOriginalFilename());
 
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("Arquivo não pode estar vazio");
+            throw new IllegalArgumentException("File cannot be empty");
         }
 
-        if (!file.getOriginalFilename().toLowerCase().endsWith(".csv")) {
-            throw new IllegalArgumentException("Apenas arquivos CSV são suportados");
-        }
-
-        List<ContactResponse> response = contactService.importFromCsv(file);
-        return ResponseEntity.ok(response);
+        List<ContactResponse> importedContacts = contactService.importFromCsv(file);
+        return ResponseEntity.ok(importedContacts);
     }
 
     @GetMapping("/export/excel")
+    @Operation(summary = "Export to Excel", description = "Exports all contacts to Excel file")
+    @ApiResponse(responseCode = "200", description = "Excel file generated successfully")
     public ResponseEntity<byte[]> exportToExcel() {
         log.info("Exporting contacts to Excel");
-
         byte[] excelData = contactService.exportToExcel();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''contatos.xlsx");
+        headers.setContentDispositionFormData("attachment", "contacts.xlsx");
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(excelData);
+        return ResponseEntity.ok().headers(headers).body(excelData);
     }
 
     @GetMapping("/export/pdf")
+    @Operation(summary = "Export to PDF", description = "Exports all contacts to PDF file")
+    @ApiResponse(responseCode = "200", description = "PDF file generated successfully")
     public ResponseEntity<byte[]> exportToPdf() {
         log.info("Exporting contacts to PDF");
-
         byte[] pdfData = contactService.exportToPdf();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''contatos.pdf");
+        headers.setContentDispositionFormData("attachment", "contacts.pdf");
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(pdfData);
+        return ResponseEntity.ok().headers(headers).body(pdfData);
     }
 }
-

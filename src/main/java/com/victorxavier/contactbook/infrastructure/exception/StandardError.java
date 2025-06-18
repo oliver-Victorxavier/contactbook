@@ -37,9 +37,6 @@ public class StandardError {
 		this.path = path;
 	}
 
-	/**
-	 * Enhanced constructor with correlation ID for request tracking
-	 */
 	public StandardError(Integer status, String error, String message, String path, String correlationId) {
 		this();
 		this.status = status;
@@ -49,7 +46,6 @@ public class StandardError {
 		this.correlationId = correlationId;
 	}
 
-	// Getters and Setters
 	public Instant getTimestamp() {
 		return timestamp;
 	}
