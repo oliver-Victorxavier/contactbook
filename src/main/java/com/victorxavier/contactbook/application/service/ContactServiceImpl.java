@@ -188,8 +188,15 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional(readOnly = true)
     public List<ContactResponse> findByName(String name) {
-        log.info("Finding contacts by name: {}", name);
+        log.info("Buscando contatos pelo nome: {}", name);
+
         List<Contact> contacts = repository.findByName(name);
+
+        if (contacts.isEmpty()) {
+            throw new ContactNotFoundException("Nenhum contato encontrado para o nome: '" + name + "'");
+        }
+
+        log.info("Encontrados {} contatos para o nome: {}", contacts.size(), name);
         return contacts.stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
