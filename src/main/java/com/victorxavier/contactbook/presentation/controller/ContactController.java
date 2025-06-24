@@ -104,15 +104,14 @@ public class ContactController {
     }
 
     @GetMapping("/name/{name}")
-    @Operation(summary = "Get contact by name", description = "Retrieves a contact by name")
+    @Operation(summary = "Get contacts by name", description = "Retrieves a list of contacts matching the name")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Contact found"),
-            @ApiResponse(responseCode = "404", description = "Contact not found", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Contacts found (can be an empty list)")
     })
-    public ResponseEntity<ContactResponse> getContactByName(
-            @Parameter(description = "Contact name", example = "John Doe") @PathVariable String name) {
-        log.info("Getting contact by name: {}", name);
-        ContactResponse response = contactService.findByName(name);
+    public ResponseEntity<List<ContactResponse>> getContactsByName(
+            @Parameter(description = "Contact name", example = "João da Silva") @PathVariable String name) {
+        log.info("Getting contacts by name: {}", name);
+        List<ContactResponse> response = contactService.findByName(name);
         return ResponseEntity.ok(response);
     }
 

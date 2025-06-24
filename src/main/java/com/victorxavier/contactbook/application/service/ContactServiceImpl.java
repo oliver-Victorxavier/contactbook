@@ -25,19 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Implementation of ContactService interface.
- * Handles all contact business logic including address integration via ViaCEP API.
- *
- * Key Features:
- * - Automatic address resolution via CEP
- * - Transactional operations
- * - Comprehensive error handling
- * - Import/Export functionality
- *
- * @author Victor Xavier
- * @since 1.0
- */
 @Service
 @Transactional
 public class ContactServiceImpl implements ContactService {
@@ -65,10 +52,7 @@ public class ContactServiceImpl implements ContactService {
         this.csvImportService = csvImportService;
     }
 
-    /**
-     * Creates a new contact with automatic address resolution.
-     * Validates CEP and fetches address data from external service.
-     */
+
     @Override
     public ContactResponse save(ContactRequest request) {
         log.info("Saving contact with name: {}", request.getName());
@@ -198,13 +182,17 @@ public class ContactServiceImpl implements ContactService {
                 .orElseThrow(() -> new ContactNotFoundException("Contato não encontrado com ID: " + id));
     }
 
+    /**
+     * Finds contacts by name, handling multiple results.
+     */
     @Override
     @Transactional(readOnly = true)
-    public ContactResponse findByName(String name) {
-        log.info("Finding contact by name: {}", name);
-        return repository.findByName(name)
+    public List<ContactResponse> findByName(String name) {
+        log.info("Finding contacts by name: {}", name);
+        List<Contact> contacts = repository.findByName(name);
+        return contacts.stream()
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new ContactNotFoundException("Contato não encontrado com nome: " + name));
+                .collect(Collectors.toList());
     }
 
     @Override
