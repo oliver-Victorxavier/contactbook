@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📇 API de Agenda de Contatos (ContactBook)
+# 📇 Contact Book API
 
 <p>
   <a href="https://github.com/oliver-Victorxavier/contactbook/actions/workflows/prod.yml">
@@ -11,80 +11,75 @@
   </a>
 </p>
 
-<div align="center">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" height="40" alt="java logo"  />
-  <img width="12" />
-  <img src="https://img.shields.io/badge/Spring-6DB33F?logo=spring&logoColor=black&style=for-the-badge" height="40" alt="spring logo"  />
-  <img width="12" />
-  <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white&style=for-the-badge" height="40" alt="docker logo"  />
-  <img width="12" />
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=for-the-badge" height="40" alt="postgresql logo"  />
 </div>
 
-</div>
-
-API RESTful para gerenciamento de contatos, construída com Java e Spring Boot. O projeto é totalmente containerizado com Docker e possui um pipeline de CI/CD configurado com GitHub Actions para automação de build e deploy.
+A RESTful API for contact management, built with Java and Spring Boot. The project is fully containerized with Docker and features a CI/CD pipeline configured with GitHub Actions for automated builds and deployments.
 
 ---
 
-## 📋 Tabela de Conteúdos
+## 📋 Table of Contents
 
-- [Visão Geral](#-visão-geral)
-- [Funcionalidades](#-funcionalidades)
-- [Arquitetura do Projeto](#-arquitetura-do-projeto)
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [Começando](#-começando)
-- [Documentação da API](#-documentação-da-api)
-- [Autor e Contato](#-autor-e-contato)
-- [Licença](#-licença)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Project Architecture](#-project-architecture)
+- [Technologies Used](#-technologies-used)
+- [Setup and Execution](#-setup-and-execution)
+- [API Documentation](#-api-documentation)
+- [Author and Contact](#-author-and-contact)
+- [License](#-license)
 
 ---
 
-## 🖼️ Visão Geral
+## 🖼️ Overview
 
-Abaixo, uma prévia da documentação interativa da API gerada com o Swagger.
+Below is a preview of the interactive API documentation generated with Swagger.
 
 <div align="center">
-  <img src="URL_DA_SUA_IMAGEM_AQUI" alt="Swagger UI Preview" width="80%">
+  <img src="URL_TO_YOUR_IMAGE_HERE" alt="Swagger UI Preview" width="80%">
 </div>
 
 ---
 
-## ✨ Funcionalidades
+## ✨ Features
 
--   **✅ CRUD Completo:** Operações para Criar, Ler, Atualizar e Deletar contatos.
--   **📍 Endereçamento Automático:** Integração com a API [ViaCEP](https://viacep.com.br/) para preencher o endereço completo.
--   **🔍 Busca e Paginação:** Listagem de contatos com suporte a paginação, ordenação e busca.
--   **⬆️ Importação / ⬇️ Exportação:** Importe contatos via `.csv` e exporte para `.pdf` e `.xlsx`.
--   **🐳 Ambiente Containerizado:** Todo o ambiente (API, Banco de Dados, Admin) orquestrado com Docker Compose.
--   **🚀 CI/CD Automatizado:** Pipeline com GitHub Actions que testa, constrói e publica a imagem no Docker Hub.
--   **📚 Documentação Interativa:** API documentada com Swagger (OpenAPI 3.0).
+-   **✅ Full CRUD:** Create, Read, Update, and Delete operations for contacts.
+-   **📍 Automatic Address Population:** Integration with the [ViaCEP](https://viacep.com.br/) API to fill in the complete address from a postal code.
+-   **🔍 Search and Pagination:** List contacts with support for pagination, sorting, and searching by name.
+-   **⬆️ Import / ⬇️ Export:** Import contacts from a `.csv` file and export the complete list to `.pdf` and `.xlsx` (Excel) files.
+-   **🐳 Containerized Environment:** The entire environment (API, Database, Admin) is orchestrated with Docker Compose.
+-   **🚀 Automated CI/CD:** A pipeline with GitHub Actions that tests, builds, and publishes the application image to Docker Hub.
+-   **📚 Interactive Documentation:** The API is documented with Swagger (OpenAPI 3.0).
 
 ---
 
-## 📂 Arquitetura do Projeto
+## 📂 Project Architecture
 
-O projeto foi estruturado utilizando princípios de **Arquitetura Limpa (Clean Architecture)** e **Design Orientado a Domínio (DDD)**, separando as responsabilidades em quatro camadas principais: `presentation`, `application`, `domain` e `infrastructure`.
+The project is structured using principles of **Clean Architecture** and **Domain-Driven Design (DDD)**. This approach aims for low coupling and high cohesion by separating responsibilities into four main layers:
+
+-   `presentation`: The outermost layer, responsible for handling requests (Controllers) and presenting data.
+-   `application`: Orchestrates the application's use cases, acting as a mediator between the presentation and domain layers.
+-   `domain`: The core of the application. It contains the entities, core business logic, and repository interfaces.
+-   `infrastructure`: The innermost layer, containing implementations for external technologies, such as the HTTP client for ViaCEP, persistence configuration, and exception handling.
 
 <details>
-  <summary>Clique para expandir e ver a estrutura do código</summary>
-
+  <summary>Click to expand and view the code structure</summary>
+  
 ```bash
 └── src/main/java/com/victorxavier/contactbook
     ├── presentation
-    │   └── controller      # Camada de Apresentação (Controllers REST)
+    │   └── controller      # Presentation Layer (REST Controllers)
     ├── application
     │   ├── dto             # Data Transfer Objects (Requests/Responses)
-    │   ├── mapper          # Mapeamento entre DTOs e Entidades
-    │   └── service         # Orquestração e casos de uso da aplicação
+    │   ├── mapper          # Mappers between DTOs and Entities
+    │   └── service         # Application use case orchestration
     ├── domain
-    │   ├── entity          # Entidades e regras de negócio do domínio
-    │   ├── repository      # Interfaces de repositório (contratos de persistência)
-    │   └── service         # Serviços de domínio (lógica de negócio core)
+    │   ├── entity          # Domain entities and business rules
+    │   ├── repository      # Repository interfaces (persistence contracts)
+    │   └── service         # Core domain logic services
     ├── infrastructure
-    │   ├── client          # Clientes para serviços externos (ex: ViaCEP)
-    │   ├── exception       # Tratamento global de exceções
-    │   └── service         # Implementações de serviços de infra (exportação, etc.)
+    │   ├── client          # Clients for external services (e.g., ViaCEP)
+    │   ├── exception       # Global exception handling
+    │   └── service         # Infrastructure service implementations (e.g., export)
     └── ContactbookApplication.java
 ```
 
@@ -92,84 +87,99 @@ O projeto foi estruturado utilizando princípios de **Arquitetura Limpa (Clean A
 
 ---
 
-## 💻 Tecnologias Utilizadas
+## 💻 Technologies Used
 
-| Categoria      | Tecnologia                                                              |
-| -------------- | ----------------------------------------------------------------------- |
-| **Back-end**   | Java 21, Spring Boot 3, Spring Data JPA, Maven                          |
-| **Banco de Dados** | PostgreSQL                                                              |
-| **DevOps**     | Docker, Docker Compose, GitHub Actions                                  |
-| **Documentação** | Swagger (OpenAPI 3.0)                                                   |
+| Category                 | Technology                                                              |
+| ------------------------ | ----------------------------------------------------------------------- |
+| **Back-end**             | Java 21, Spring Boot 3, Spring Data JPA, Hibernate, Maven               |
+| **Database**             | PostgreSQL                                                              |
+| **DevOps & Documentation** | Docker, Docker Compose, GitHub Actions (CI/CD), OpenAPI 3.0 (Springdoc) |
 
 ---
 
-## 🚀 Começando
+## 🚀 Setup and Execution
 
-Siga os passos abaixo para executar o projeto em seu ambiente local.
+The development environment is fully managed with Docker, ensuring consistency and simplicity.
 
-### Pré-requisitos
+### Prerequisites
 -   [Git](https://git-scm.com/)
--   [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/)
+-   [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
-### Executando com Docker
+### Step-by-Step
 
-1.  **Clone o repositório:**
+1.  **Clone the repository:**
     ```bash
     git clone https://github.com/oliver-Victorxavier/contactbook.git
     cd contactbook
     ```
 
-2.  **Inicie os contêineres:**
-    Este comando irá construir a imagem (se necessário) e iniciar os serviços da API, do banco de dados e do PgAdmin.
+2.  **Start the environment with Docker Compose:**
+    This command will build the application image and start all defined services in the `compose.yml` file (API, Database, and PgAdmin) in detached mode (-d).
     ```bash
     docker-compose up -d
     ```
 
-3.  **Acesse os serviços:**
-    -   **API:** `http://localhost:8080`
-    -   **Documentação (Swagger):** `http://localhost:8080/swagger-ui/index.html`
-    -   **PgAdmin (Admin do Banco):** `http://localhost:16543` (login: `admin@gmail.com`, senha: `admin`)
+3.  **Verify that the containers are running:**
+    ```bash
+    docker-compose ps
+    ```
+    You should see the three services (`contactbook-app`, `postgres-db`, `pgadmin`) with an `Up` status.
+
+4.  **Access the services:**
+    -   **API Documentation (Swagger):** `http://localhost:8080/swagger-ui/index.html`
+    -   **PgAdmin (Database Interface):** `http://localhost:16543` (login: `admin@gmail.com`, password: `admin`)
+    
+    <details>
+      <summary><strong>How to Connect PgAdmin to the Database (Step-by-Step)</strong></summary>
+      
+      1. After logging into PgAdmin, right-click on **Servers** in the side menu and go to **Register -> Server...**.
+      2. In the **General** tab, give your connection a name (e.g., `contactbook-local`).
+      3. Switch to the **Connection** tab and fill in the following details (from the `compose.yml` file):
+         - **Host name/address:** `postgres-db`
+         - **Port:** `5432`
+         - **Maintenance database:** `contactbook`
+         - **Username:** `admin`
+         - **Password:** `admin`
+      4. Click **Save**. You can now browse the tables in the `contactbook` database.
+    </e_details>
 
 ---
 
-## 📖 Documentação da API
+## 📖 API Documentation
 
-A documentação completa e interativa dos endpoints está disponível via Swagger UI após a inicialização do projeto.
+The complete and interactive endpoint documentation is available via Swagger UI after starting the project. You can test all API features directly from your browser.
 
 <details>
-  <summary>Clique para expandir e ver os principais endpoints</summary>
-
-| Método | Endpoint                    | Descrição                                 |
-| :----- | :-------------------------- | :---------------------------------------- |
-| `GET`  | `/api/contacts`             | Lista contatos com paginação e busca.     |
-| `POST` | `/api/contacts`             | Cria um novo contato.                     |
-| `GET`  | `/api/contacts/{id}`        | Busca um contato por ID.                  |
-| `PUT`  | `/api/contacts/{id}`        | Atualiza um contato por ID.               |
-| `DELETE`| `/api/contacts/{id}`        | Deleta um contato por ID.                 |
-| `GET`  | `/api/contacts/export/pdf`  | Exporta todos os contatos para PDF.       |
-| `GET`  | `/api/contacts/export/excel`| Exporta todos os contatos para Excel.     |
-| `POST` | `/api/contacts/import`      | Importa contatos de um arquivo CSV.       |
+  <summary>Click to expand and view the main endpoints</summary>
+  
+| Method   | Endpoint                     | Description                               |
+| :------- | :--------------------------- | :---------------------------------------- |
+| `GET`    | `/api/contacts`              | Lists contacts with pagination and search. |
+| `POST`   | `/api/contacts`              | Creates a new contact.                    |
+| `GET`    | `/api/contacts/{id}`         | Finds a contact by ID.                    |
+| `PUT`    | `/api/contacts/{id}`         | Updates a contact by ID.                  |
+| `DELETE` | `/api/contacts/{id}`         | Deletes a contact by ID.                  |
+| `GET`    | `/api/contacts/export/pdf`   | Exports all contacts to PDF.              |
+| `GET`    | `/api/contacts/export/excel` | Exports all contacts to Excel.            |
+| `POST`   | `/api/contacts/import`       | Imports contacts from a CSV file.         |
 
 </details>
 
 ---
 
-## 👨‍💻 Autor e Contato
+## 👨‍💻 Author and Contact
 
-Feito com ❤️ por **Victor Xavier**. Sinta-se à vontade para entrar em contato!
+Made with ❤️ by **Victor Xavier**. Feel free to get in touch!
 
 <a href="https://www.linkedin.com/in/victor-xavier-/" target="_blank">
-  <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="linkedin logo"  />
+  <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn logo"  />
 </a>
 <a href="mailto:victor.xavier.oliver@gmail.com">
-  <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="email logo" />
-</a>
-<a href="https://github.com/oliver-Victorxavier" target="_blank">
-  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="github logo" />
+  <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email logo" />
 </a>
 
 ---
 
-## 📜 Licença
+## 📜 License
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](https://github.com/oliver-Victorxavier/contactbook/blob/main/LICENSE) para mais detalhes.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/oliver-Victorxavier/contactbook/blob/main/LICENSE) file for more details.
