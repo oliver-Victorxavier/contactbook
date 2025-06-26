@@ -35,7 +35,7 @@ A RESTful API for contact management, built with Java and Spring Boot. The proje
 Below is a preview of the interactive API documentation generated with Swagger.
 
 <div align="center">
-  <img src="URL_TO_YOUR_IMAGE_HERE" alt="Swagger UI Preview" width="80%">
+  <img src="https://github.com/user-attachments/assets/b63ca037-d4ef-4fa2-81de-9c9b3b3afadf" alt="Swagger UI Preview" width="80%">
 </div>
 
 ---
