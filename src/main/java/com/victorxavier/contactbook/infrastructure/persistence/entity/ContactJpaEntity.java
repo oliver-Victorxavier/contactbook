@@ -1,8 +1,15 @@
-package com.victorxavier.contactbook.domain.entity;
+package com.victorxavier.contactbook.infrastructure.persistence.entity;
 
-public class Contact {
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "contact_book_tb")
+public class ContactJpaEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String phone;
     private String cep;
@@ -12,19 +19,7 @@ public class Contact {
     private String cidade;
     private String estado;
 
-    public Contact() {}
-
-    public Contact(Long id, String name, String phone, String cep, Integer numero) {
-        this.id = id;
-        this.name = name;
-        this.phone = phone;
-        this.cep = cep;
-        this.numero = numero;
-    }
-
-    public Contact(String name, String phone, String cep, Integer numero) {
-        this(null, name, phone, cep, numero);
-    }
+    public ContactJpaEntity() {}
 
     public Long getId() {
         return id;
@@ -96,19 +91,5 @@ public class Contact {
 
     public void setEstado(String estado) {
         this.estado = estado;
-    }
-
-    public void setAddress(String logradouro, String bairro, String cidade, String estado) {
-        this.logradouro = logradouro;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.estado = estado;
-    }
-
-    public void clearAddress() {
-        this.logradouro = null;
-        this.bairro = null;
-        this.cidade = null;
-        this.estado = null;
     }
 }

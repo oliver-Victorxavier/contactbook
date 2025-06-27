@@ -3,6 +3,7 @@ package com.victorxavier.contactbook.presentation.controller;
 import com.victorxavier.contactbook.application.dto.request.ContactRequest;
 import com.victorxavier.contactbook.application.dto.request.ContactUpdateRequest;
 import com.victorxavier.contactbook.application.dto.response.ContactResponse;
+import com.victorxavier.contactbook.application.dto.response.ExportedFile;
 import com.victorxavier.contactbook.application.dto.response.PageResponse;
 import com.victorxavier.contactbook.application.service.ContactService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +40,7 @@ public class ContactController {
         this.contactService = contactService;
     }
 
+    // Endpoints de CRUD (create, update, delete, get) permanecem os mesmos...
     @PostMapping
     @Operation(summary = "Create new contact", description = "Creates a new contact with automatic address resolution via CEP")
     @ApiResponses({
@@ -161,31 +163,22 @@ public class ContactController {
         return ResponseEntity.ok(importedContacts);
     }
 
-    @GetMapping("/export/excel")
-    @Operation(summary = "Export to Excel", description = "Exports all contacts to Excel file")
-    @ApiResponse(responseCode = "200", description = "Excel file generated successfully")
-    public ResponseEntity<byte[]> exportToExcel() {
-        log.info("Exporting contacts to Excel");
-        byte[] excelData = contactService.exportToExcel();
+    @GetMapping("/export")
+    @Operation(summary = "Export contacts", description = "Exports all contacts to a specified format (excel or pdf)")
+    @ApiResponse(responseCode = "200", description = "File generated successfully")
+    public ResponseEntity<byte[]> exportContacts(
+            @Parameter(description = "Export format: 'excel' or 'pdf'", required = true, example = "pdf")
+            @RequestParam String format) {
+
+        log.info("Requesting contact export for format: {}", format);
+        ExportedFile exportedFile = contactService.export(format);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "contacts.xlsx");
+        headers.setContentType(MediaType.parseMediaType(exportedFile.getContentType()));
+        headers.setContentDispositionFormData("attachment", exportedFile.getFilename());
 
-        return ResponseEntity.ok().headers(headers).body(excelData);
-    }
-
-    @GetMapping("/export/pdf")
-    @Operation(summary = "Export to PDF", description = "Exports all contacts to PDF file")
-    @ApiResponse(responseCode = "200", description = "PDF file generated successfully")
-    public ResponseEntity<byte[]> exportToPdf() {
-        log.info("Exporting contacts to PDF");
-        byte[] pdfData = contactService.exportToPdf();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "contacts.pdf");
-
-        return ResponseEntity.ok().headers(headers).body(pdfData);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(exportedFile.getData());
     }
 }

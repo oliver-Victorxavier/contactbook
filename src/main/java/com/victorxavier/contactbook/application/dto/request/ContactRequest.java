@@ -6,29 +6,23 @@ import jakarta.validation.constraints.*;
 @Schema(description = "Request payload for creating a new contact")
 public class ContactRequest {
 
-    @NotBlank(message = "Name is required")
+    @NotBlank(message = "Name cannot be blank")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
-    @Schema(description = "Full name of the contact", example = "John Doe", required = true)
+    @Schema(description = "Full name of the contact.", example = "João da Silva", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @NotBlank(message = "Phone is required")
-    @Pattern(
-            regexp = "^\\(?\\d{2}\\)?[\\s-]?\\d{4,5}-?\\d{4}$",
-            message = "Invalid phone format. Use: (11) 99999-9999 or 11999999999"
-    )
-    @Schema(description = "Phone number in Brazilian format", example = "(11) 99999-9999", required = true)
+    @NotBlank(message = "Phone cannot be blank")
+    @Pattern(regexp = "\\d{10,11}", message = "Phone must contain 10 or 11 digits")
+    @Schema(description = "Contact's phone number (only digits).", example = "11999998888", requiredMode = Schema.RequiredMode.REQUIRED)
     private String phone;
-    @NotBlank(message = "CEP is required")
-    @Pattern(
-            regexp = "^\\d{5}-?\\d{3}$",
-            message = "CEP must be in format 00000-000 or 00000000"
-    )
-    @Schema(description = "Brazilian postal code", example = "01001-000", required = true)
+
+    @NotBlank(message = "CEP cannot be blank")
+    @Pattern(regexp = "\\d{8}", message = "CEP must contain 8 digits")
+    @Schema(description = "Brazilian postal code (CEP), 8 digits only.", example = "01001000", requiredMode = Schema.RequiredMode.REQUIRED)
     private String cep;
 
-    @NotNull(message = "Number is required")
-    @Min(value = 1, message = "Number must be greater than 0")
-    @Schema(description = "House or building number", example = "123", required = true)
+    @NotNull(message = "Address number cannot be null")
+    @Schema(description = "Address number.", example = "123", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer numero;
 
     public ContactRequest() {}

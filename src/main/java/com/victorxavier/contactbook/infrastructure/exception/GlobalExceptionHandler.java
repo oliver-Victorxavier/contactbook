@@ -125,27 +125,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationError);
     }
 
-    @ExceptionHandler(ContactValidationException.class)
-    public ResponseEntity<ValidationError> handleContactValidation(
-            ContactValidationException ex, HttpServletRequest request) {
-
-        String correlationId = generateCorrelationId();
-        log.warn("Contact validation errors [{}]: {} field(s) invalid",
-                correlationId, ex.getFieldErrors().size());
-
-        ValidationError validationError = new ValidationError(
-                HttpStatus.BAD_REQUEST.value(),
-                "Contact Validation Error",
-                "Dados do contato são inválidos",
-                request.getRequestURI(),
-                correlationId
-        );
-
-        validationError.addErrors(ex.getFieldErrors());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationError);
-    }
-
     @ExceptionHandler(ContactNotFoundException.class)
     public ResponseEntity<StandardError> handleContactNotFound(
             ContactNotFoundException ex, HttpServletRequest request) {

@@ -1,5 +1,6 @@
 package com.victorxavier.contactbook.infrastructure.service;
 
+import com.victorxavier.contactbook.application.port.out.ContactExportPort;
 import com.victorxavier.contactbook.domain.entity.Contact;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -10,26 +11,14 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-/**
- * Service responsible for exporting contact data to Excel format (.xlsx).
- * Uses Apache POI library for Excel file generation.
- *
- * @author Victor Xavier
- * @since 1.0
- */
 @Service
-public class ExcelExportService {
+public class ExcelExportService implements ContactExportPort {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelExportService.class);
 
-    /**
-     * Exports a list of contacts to Excel format as byte array.
-     *
-     * @param contacts List of contacts to export
-     * @return byte[] Excel file content
-     * @throws RuntimeException if export fails
-     */
-    public byte[] exportContacts(List<Contact> contacts) {
+    @Override
+    public byte[] export(List<Contact> contacts) {
+        log.info("Generating Excel export for {} contacts", contacts.size());
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
@@ -49,16 +38,15 @@ public class ExcelExportService {
                 cell.setCellStyle(headerStyle);
             }
 
-            for (int i = 0; i < contacts.size(); i++) {
-                Contact contact = contacts.get(i);
-                Row row = sheet.createRow(i + 1);
-
+            int rowNum = 1;
+            for (Contact contact : contacts) {
+                Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(contact.getId());
                 row.createCell(1).setCellValue(contact.getName());
                 row.createCell(2).setCellValue(contact.getPhone());
                 row.createCell(3).setCellValue(contact.getCep());
                 row.createCell(4).setCellValue(contact.getLogradouro());
-                row.createCell(5).setCellValue(contact.getNumero());
+                row.createCell(5).setCellValue(contact.getNumero() != null ? contact.getNumero() : 0);
                 row.createCell(6).setCellValue(contact.getBairro());
                 row.createCell(7).setCellValue(contact.getCidade());
                 row.createCell(8).setCellValue(contact.getEstado());
@@ -69,11 +57,28 @@ public class ExcelExportService {
             }
 
             workbook.write(outputStream);
+            log.info("Excel export generated successfully.");
             return outputStream.toByteArray();
 
         } catch (Exception e) {
             log.error("Error exporting contacts to Excel", e);
-            throw new RuntimeException("Erro ao exportar para Excel: " + e.getMessage());
+
+            throw new RuntimeException("Erro ao exportar para Excel: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public String getMimeType() {
+        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    }
+
+    @Override
+    public String getFilename() {
+        return "contacts.xlsx";
+    }
+
+    @Override
+    public boolean canHandle(String format) {
+        return "excel".equalsIgnoreCase(format);
     }
 }
