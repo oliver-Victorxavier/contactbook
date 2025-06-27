@@ -1,14 +1,35 @@
 package com.victorxavier.contactbook.application.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Represents a contact as returned by the API.")
 public class ContactResponse {
+
+    @Schema(description = "Unique identifier of the contact.", example = "1")
     private Long id;
+
+    @Schema(description = "Full name of the contact.", example = "João da Silva")
     private String name;
+
+    @Schema(description = "Contact's phone number.", example = "11999998888")
     private String phone;
+
+    @Schema(description = "Brazilian postal code (CEP).", example = "01001000")
     private String cep;
+
+    @Schema(description = "Street name, automatically fetched from CEP.", example = "Praça da Sé")
     private String logradouro;
+
+    @Schema(description = "Address number.", example = "123")
     private Integer numero;
+
+    @Schema(description = "Neighborhood, automatically fetched from CEP.", example = "Sé")
     private String bairro;
+
+    @Schema(description = "City, automatically fetched from CEP.", example = "São Paulo")
     private String cidade;
+
+    @Schema(description = "State, automatically fetched from CEP.", example = "SP")
     private String estado;
     private String enderecoCompleto;
 
