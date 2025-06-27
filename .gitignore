@@ -44,8 +44,3 @@ build/
 
 # Sensitive data
 *.tfvars
-
-# Maven
-.mvn/
-mvnw
-mvnw.cmd
