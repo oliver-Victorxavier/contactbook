@@ -3,8 +3,8 @@
 # 📇 Contact Book API
 
 <p>
-  <a href="https://github.com/oliver-Victorxavier/contactbook/actions/workflows/main.yml">
-    <img src="https://github.com/oliver-Victorxavier/contactbook/actions/workflows/main.yml/badge.svg" alt="Build Status">
+  <a href="https://github.com/oliver-Victorxavier/contactbook/actions/workflows/prod.yml">
+    <img src="https://github.com/oliver-Victorxavier/contactbook/actions/workflows/prod.yml/badge.svg" alt="Build Status">
   </a>
   <a href="https://github.com/oliver-Victorxavier/contactbook/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
@@ -149,7 +149,7 @@ The development environment is fully managed with Docker, ensuring consistency a
         - **Username:** `admin`
         - **Password:** `admin`
     4. Click **Save**. You can now browse the tables in the `contactbook` database.
-       </e_details>
+       </details>
 
 ---
 
