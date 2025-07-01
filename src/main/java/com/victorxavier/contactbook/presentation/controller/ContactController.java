@@ -40,7 +40,6 @@ public class ContactController {
         this.contactService = contactService;
     }
 
-    // Endpoints de CRUD (create, update, delete, get) permanecem os mesmos...
     @PostMapping
     @Operation(summary = "Create new contact", description = "Creates a new contact with automatic address resolution via CEP")
     @ApiResponses({

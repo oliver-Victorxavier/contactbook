@@ -54,12 +54,46 @@ Below is a preview of the interactive API documentation generated with Swagger.
 
 ## 📂 Project Architecture
 
-The project is strictly structured following the **Clean Architecture** and **Ports & Adapters** patterns. This design isolates the core business logic from external concerns like frameworks, databases, and APIs, ensuring high maintainability and testability.
+The project is strictly structured following the **Clean Architecture** and **Ports & Adapters** patterns. The fundamental principle is the **Dependency Rule**: all dependencies must point inwards, towards the Domain. This design isolates the core business logic from external concerns like frameworks and databases, ensuring high maintainability and testability.
 
--   `domain`: The absolute core of the application. It contains pure, framework-agnostic business entities and the interfaces (`Ports`) that define the contracts for external interactions (like persistence).
--   `application`: This layer orchestrates the use cases (Application Services). It depends on the `domain` layer's interfaces and defines its own `Ports` for driving the application (e.g., `ContactService`).
--   `infrastructure`: Provides the concrete implementations (`Adapters`) for the `Ports` defined in the inner layers. This includes database repositories, HTTP clients for external services, and implementations for file import/export.
--   `presentation`: The outermost layer, responsible for handling web requests (REST Controllers) and presenting data to the user. It depends only on the `application` layer.
+```mermaid
+graph TD
+    %% External Layers (Implementation Details)
+    subgraph " "
+        Presentation["<div style='font-size:16px; font-weight:bold; color:#000;'>Presentation Layer</div><div style='font-size:14px; color:#222;'>REST Controllers<br/>(Spring Web)</div>"]
+        Infrastructure["<div style='font-size:16px; font-weight:bold; color:#000;'>Infrastructure Layer</div><div style='font-size:14px; color:#222;'>Adapters:<br/>- Database (JPA)<br/>- HTTP Clients<br/>- File Export</div>"]
+    end
+
+    %% Application Layer
+    subgraph " "
+        Application["<div style='font-size:16px; font-weight:bold; color:#000;'>Application Layer</div><div style='font-size:14px; color:#222;'>Use Cases (Services)<br/>Defines Interfaces (Output Ports)</div>"]
+    end
+
+    %% Core Layer (The Heart of the System)
+    subgraph " "
+        Domain["<div style='font-size:16px; font-weight:bold; color:#000;'>Domain Layer</div><div style='font-size:14px; color:#222;'>Entities<br/>Business Rules<br/>Repository Interfaces (Ports)</div>"]
+    end
+
+    %% Defining Dependencies
+    Presentation -- "Depends on" --> Application
+    Infrastructure -- "Implements" --> Application
+    Application -- "Depends on" --> Domain
+    Infrastructure -- "Implements" --> Domain
+
+    %% Styles for a clean and professional design
+    style Domain fill:#eaf2ff,stroke:#5c8dff,stroke-width:3px
+    style Application fill:#f0f4f8,stroke:#a0aec0,stroke-width:2px
+    style Presentation fill:#f8f9fa,stroke:#ced4da,stroke-width:1px
+    style Infrastructure fill:#f8f9fa,stroke:#ced4da,stroke-width:1px
+```
+
+### How the Layers Interact
+
+1.  **Domain:** The core. It depends on nothing. It contains the most important and stable business logic.
+2.  **Application:** Orchestrates data flows and use-case-specific business rules. It only depends on the Domain.
+3.  **Presentation & Infrastructure:** The outermost layers. They are "details" that can be swapped out. They depend on the inner layers, implementing the interfaces (Ports) they define. `Presentation` handles input (HTTP), and `Infrastructure` handles output (database, external APIs, etc.).
+
+<br>
 
 <details>
   <summary><strong>Click to expand and view the code structure</strong></summary>
@@ -122,7 +156,7 @@ The development environment is fully managed with Docker, ensuring consistency a
     ```
 
 2.  **Start the environment with Docker Compose:**
-    This command will build the application image and start all defined services in the `compose.yml` file (API, Database, and PgAdmin) in detached mode (-d).
+    This command will build the application image and start all defined services in the `compose.yml` file (API, Database, and PgAdmin) in detached mode (`-d`).
     ```bash
     docker-compose up -d
     ```
