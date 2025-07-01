@@ -1,21 +1,25 @@
+version: '3.8'
+
 services:
   postgres-db:
     container_name: postgres-db
-    image: postgres
+    image: postgres:16-alpine
     environment:
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "admin"
       POSTGRES_DB: "contactbook"
       TZ: "America/Sao_Paulo"
     ports:
-      - "15432:5432"
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - docker-network
-    restart: always
+    restart: unless-stopped
 
   contactbook-app:
     container_name: contactbook-app
-    image: victorxavie/contactbook-api:latest
+    build: .
     environment:
       SPRING_PROFILES_ACTIVE: docker
       TZ: "America/Sao_Paulo"
@@ -25,7 +29,13 @@ services:
       - postgres-db
     networks:
       - docker-network
-    restart: always
+    # Mount local source code into the container to enable live-reloading.
+    # Changes to './src' or 'pom.xml' on the host are reflected instantly.
+    volumes:
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+
+    restart: unless-stopped
 
   pgadmin:
     container_name: pgadmin
@@ -40,7 +50,10 @@ services:
       - postgres-db
     networks:
       - docker-network
-    restart: always
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
 
 networks:
   docker-network:
