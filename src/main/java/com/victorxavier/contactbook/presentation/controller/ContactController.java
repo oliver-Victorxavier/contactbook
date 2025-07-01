@@ -163,11 +163,21 @@ public class ContactController {
     }
 
     @GetMapping("/export")
-    @Operation(summary = "Export contacts", description = "Exports all contacts to a specified format (excel or pdf)")
+    @Operation(
+            summary = "Export contacts",
+            description = "Exports all contacts to a specified format (excel or pdf).",
+            parameters = {
+                    @Parameter(
+                            name = "format",
+                            description = "The desired export format.",
+                            required = true,
+                            schema = @Schema(type = "string", allowableValues = {"excel", "pdf"}),
+                            example = "pdf"
+                    )
+            }
+    )
     @ApiResponse(responseCode = "200", description = "File generated successfully")
-    public ResponseEntity<byte[]> exportContacts(
-            @Parameter(description = "Export format: 'excel' or 'pdf'", required = true, example = "pdf")
-            @RequestParam String format) {
+    public ResponseEntity<byte[]> exportContacts(@RequestParam String format) {
 
         log.info("Requesting contact export for format: {}", format);
         ExportedFile exportedFile = contactService.export(format);
