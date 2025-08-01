@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CsvImportService implements CsvImportPort {
@@ -33,11 +34,11 @@ public class CsvImportService implements CsvImportPort {
 
         List<Contact> contacts = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            String linha;
+            String line;
             int lineNumber = 0;
             boolean isFirstLine = true;
 
-            while ((linha = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 lineNumber++;
 
                 if (isFirstLine) {
@@ -45,26 +46,18 @@ public class CsvImportService implements CsvImportPort {
                     continue;
                 }
 
-                if (linha.trim().isEmpty()) {
+                if (line.trim().isEmpty()) {
                     continue;
                 }
 
-                String[] fields = linha.split(",");
-                if (fields.length < 4) {
-                    log.warn("Skipping malformed line {}: {}", lineNumber, linha);
+                String[] fields = line.split(",");
+                if (fields.length < MINIMUM_COLUMNS) {
+                    log.warn("Skipping malformed line {}: {}", lineNumber, line);
                     continue;
                 }
 
-                try {
-                    Contact contact = new Contact();
-                    contact.setName(fields[0].trim());
-                    contact.setPhone(fields[1].trim());
-                    contact.setCep(fields[2].trim());
-                    contact.setNumero(Integer.parseInt(fields[3].trim()));
-                    contacts.add(contact);
-                } catch (NumberFormatException e) {
-                    log.warn("Skipping line {} due to invalid number format: {}", lineNumber, linha);
-                }
+                createContactFromCsv(fields)
+                    .ifPresent(contacts::add);
             }
         } catch (Exception e) {
             log.error("Error processing CSV file", e);
@@ -75,7 +68,7 @@ public class CsvImportService implements CsvImportPort {
         return contacts;
     }
 
-    private java.util.Optional<Contact> createContactFromCsv(String[] data) {
+    private Optional<Contact> createContactFromCsv(String[] data) {
         try {
             String name = data[0].trim();
             String phone = data[1].trim();
@@ -96,13 +89,13 @@ public class CsvImportService implements CsvImportPort {
                 log.warn("Could not find address for CEP: {} during CSV import. Contact will be imported without full address.", cep);
             }
 
-            return java.util.Optional.of(contact);
+            return Optional.of(contact);
         } catch (NumberFormatException e) {
             log.warn("Error parsing number in CSV line: {}. Skipping line.", String.join(",", data));
-            return java.util.Optional.empty();
+            return Optional.empty();
         } catch (Exception e) {
             log.warn("Error parsing generic data in CSV line: {}. Skipping line.", String.join(",", data));
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
     }
 }

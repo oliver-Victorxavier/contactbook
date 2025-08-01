@@ -4,7 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.victorxavier.contactbook.application.port.out.ContactExportPort;
+import com.victorxavier.contactbook.application.port.out.AbstractContactExportPort;
 import com.victorxavier.contactbook.domain.entity.Contact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +15,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
-public class PdfExportService implements ContactExportPort {
+public class PdfExportService extends AbstractContactExportPort {
 
     private static final Logger log = LoggerFactory.getLogger(PdfExportService.class);
+    
+    public PdfExportService() {
+        super("pdf", "application/pdf", "pdf");
+    }
 
     @Override
     public byte[] export(List<Contact> contacts) {
@@ -82,18 +86,5 @@ public class PdfExportService implements ContactExportPort {
         }
     }
 
-    @Override
-    public String getMimeType() {
-        return "application/pdf";
-    }
-
-    @Override
-    public String getFilename() {
-        return "contacts.pdf";
-    }
-
-    @Override
-    public boolean canHandle(String format) {
-        return "pdf".equalsIgnoreCase(format);
-    }
+    // Methods for getMimeType, getFilename, and canHandle are inherited from AbstractContactExportPort
 }

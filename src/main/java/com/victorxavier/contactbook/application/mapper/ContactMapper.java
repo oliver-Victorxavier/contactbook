@@ -12,8 +12,7 @@ public class ContactMapper {
     public Contact toEntity(ContactRequest request) {
         if (request == null) return null;
 
-        String cleanCep = request.getCep().replace("-", "");
-        return new Contact(request.getName(), request.getPhone(), cleanCep, request.getNumero());
+        return new Contact(request.getName(), request.getPhone(), request.getCleanCep(), request.getNumero());
     }
 
     public ContactResponse toResponse(Contact contact) {
@@ -40,7 +39,7 @@ public class ContactMapper {
             contact.setPhone(request.getPhone());
         }
         if (request.getCep() != null) {
-            contact.setCep(request.getCep().replace("-", ""));
+            contact.setCep(request.getCleanCep());
         }
         if (request.getNumero() != null) {
             contact.setNumero(request.getNumero());

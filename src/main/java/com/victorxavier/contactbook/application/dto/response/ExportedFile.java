@@ -1,6 +1,9 @@
 package com.victorxavier.contactbook.application.dto.response;
 
-public class ExportedFile {
+/**
+ * Represents an exported file with its content and metadata
+ */
+public class ExportedFile extends BaseResponse {
 
     private final byte[] data;
     private final String filename;

@@ -50,20 +50,16 @@ public class AddressServiceImpl implements AddressService {
             throw new AddressNotFoundException("CEP não encontrado: " + cep);
 
         } catch (FeignException ex) {
-            log.error("External service error for CEP: {}, status: {}, message: {}",
-                    cleanCep, ex.status(), ex.getMessage());
+            log.error("External service error for CEP: {}, status: {}", cleanCep, ex.status());
             throw new ExternalServiceException("Erro no serviço de consulta de CEP. Tente novamente mais tarde.");
 
-        } catch (AddressNotFoundException ex) { // Re-throw se já for a exceção correta
+        } catch (AddressNotFoundException | IllegalArgumentException ex) {
+            // Re-throw domain exceptions
             throw ex;
-        }
-        catch (IllegalArgumentException ex) { // Re-throw se já for a exceção correta
-            throw ex;
-        }
-        catch (Exception ex) { // Exceção genérica como último recurso
+            
+        } catch (Exception ex) {
             log.error("Unexpected error fetching address for CEP: {}", cleanCep, ex);
-
-            throw new ExternalServiceException("Erro inesperado ao buscar endereço para o CEP: " + cep + ". Causa: " + ex.getMessage());
+            throw new ExternalServiceException("Erro inesperado ao buscar endereço para o CEP: " + cep);
         }
     }
 

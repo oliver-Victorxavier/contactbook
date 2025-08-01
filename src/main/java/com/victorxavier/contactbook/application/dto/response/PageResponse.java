@@ -3,7 +3,7 @@ package com.victorxavier.contactbook.application.dto.response;
 import org.springframework.data.domain.Page;
 import java.util.List;
 
-public class PageResponse<T> {
+public class PageResponse<T> extends BaseResponse {
     private List<T> content;
     private int page;
     private int size;

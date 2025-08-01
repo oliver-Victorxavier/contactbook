@@ -68,7 +68,6 @@ public class ValidationError {
         this.errorCount = this.errors.size();
     }
 
-    // Getters and Setters
     public Instant getTimestamp() {
         return timestamp;
     }

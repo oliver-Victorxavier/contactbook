@@ -1,6 +1,6 @@
 package com.victorxavier.contactbook.infrastructure.service;
 
-import com.victorxavier.contactbook.application.port.out.ContactExportPort;
+import com.victorxavier.contactbook.application.port.out.AbstractContactExportPort;
 import com.victorxavier.contactbook.domain.entity.Contact;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,9 +12,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @Service
-public class ExcelExportService implements ContactExportPort {
+public class ExcelExportService extends AbstractContactExportPort {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelExportService.class);
+    
+    public ExcelExportService() {
+        super("excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx");
+    }
 
     @Override
     public byte[] export(List<Contact> contacts) {
@@ -67,18 +71,5 @@ public class ExcelExportService implements ContactExportPort {
         }
     }
 
-    @Override
-    public String getMimeType() {
-        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    }
-
-    @Override
-    public String getFilename() {
-        return "contacts.xlsx";
-    }
-
-    @Override
-    public boolean canHandle(String format) {
-        return "excel".equalsIgnoreCase(format);
-    }
+    // Methods for getMimeType, getFilename, and canHandle are inherited from AbstractContactExportPort
 }
